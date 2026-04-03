@@ -1,44 +1,63 @@
-import os
 from env.environment import CustomerSupportEnv
 
-# Required variables
-API_BASE_URL = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
-MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o-mini")
-HF_TOKEN = os.getenv("HF_TOKEN")
+def smart_agent(obs):
+    message = obs["message"].lower()
+    customer_type = obs["customer_type"]
+
+    # 🎯 INTENT DETECTION
+    if "not receive" in message or "late" in message or "order" in message:
+        intent = "refund"
+    elif "complaint" in message or "second" in message:
+        intent = "escalate"
+    else:
+        intent = "refund"
+
+    # ⚡ PRIORITY DETECTION
+    if "frustrating" in message or "angry" in message:
+        priority = "high"
+    elif customer_type == "premium":
+        priority = "high"
+    else:
+        priority = "medium"
+
+    # 💬 RESPONSE GENERATION
+    if "angry" in message or "frustrating" in message:
+        response = "We sincerely apologize for the inconvenience. We understand your frustration and will resolve this immediately."
+    elif customer_type == "premium":
+        response = "We value you as a premium customer and will prioritize resolving your issue."
+    else:
+        response = "Sorry for the inconvenience, we will resolve your issue soon."
+
+    return {
+        "intent": intent,
+        "priority": priority,
+        "response": response
+    }
 
 
-def run_task(task_name):
+def run():
     env = CustomerSupportEnv()
     obs = env.reset()
 
-    print(f"[START] task={task_name} env=customer-support-env model={MODEL_NAME}")
-
-    rewards = []
-    step = 0
     done = False
+    total_reward = 0
+
+    step = 1
+
+    print("[START] Running smart agent")
 
     while not done:
-        step += 1
-
-        # Dummy intelligent action (you can improve later)
-        action = {
-            "intent": "refund",
-            "priority": "high",
-            "response": "Sorry for the inconvenience, we will resolve this issue."
-        }
+        action = smart_agent(obs)
 
         obs, reward, done, _ = env.step(action)
 
-        rewards.append(reward)
+        print(f"[STEP] {step} action={action} reward={reward}")
 
-        print(
-            f"[STEP] step={step} action={action} reward={reward:.2f} done={str(done).lower()} error=null"
-        )
+        total_reward += reward
+        step += 1
 
-    print(
-        f"[END] success=true steps={step} rewards={','.join([f'{r:.2f}' for r in rewards])}"
-    )
+    print(f"[END] Total Reward = {total_reward}")
 
 
 if __name__ == "__main__":
-    run_task("easy")
+    run()
