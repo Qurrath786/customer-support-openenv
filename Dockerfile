@@ -6,4 +6,4 @@ COPY . .
 
 RUN pip install --no-cache-dir openenv-core uv
 
-CMD ["python", "inference.py"]
+CMD python inference.py && tail -f /dev/null
