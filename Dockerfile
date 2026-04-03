@@ -4,6 +4,6 @@ WORKDIR /app
 
 COPY . .
 
-RUN pip install --no-cache-dir openenv-core uv
+RUN pip install --no-cache-dir openenv-core uvicorn
 
-CMD ["uv", "run", "server"]
+CMD ["python", "-m", "openenv.server"]
