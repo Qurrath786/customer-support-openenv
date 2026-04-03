@@ -1,0 +1,16 @@
+name: customer-support-env
+description: AI environment for handling customer support queries with emotion and priority awareness
+
+version: 1.0
+
+tasks:
+  - name: easy
+    description: Basic intent classification
+
+  - name: medium
+    description: Intent + priority classification
+
+  - name: hard
+    description: Full decision including response quality
+
+entry_point: env.environment:CustomerSupportEnv
