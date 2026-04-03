@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict
 
 
 class CustomerSupportEnv:
@@ -25,6 +25,27 @@ class CustomerSupportEnv:
             },
             {
                 "message": "I am a premium customer and this is my second complaint!",
+                "customer_type": "premium",
+                "correct_intent": "escalate",
+                "priority": "high",
+                "emotion": "angry"
+            },
+            {
+                "message": "My payment failed but money was deducted",
+                "customer_type": "regular",
+                "correct_intent": "escalate",
+                "priority": "high",
+                "emotion": "neutral"
+            },
+            {
+                "message": "Can you update me on my order status?",
+                "customer_type": "regular",
+                "correct_intent": "inform",
+                "priority": "low",
+                "emotion": "polite"
+            },
+            {
+                "message": "I have complained before and nothing was done!",
                 "customer_type": "premium",
                 "correct_intent": "escalate",
                 "priority": "high",
@@ -61,7 +82,7 @@ class CustomerSupportEnv:
         else:
             reward -= 0.2
 
-        # ✅ Response tone check (simple)
+        # ✅ Response tone check
         response = action.get("response", "").lower()
 
         if any(word in response for word in ["sorry", "apologize", "understand"]):
@@ -69,9 +90,15 @@ class CustomerSupportEnv:
         else:
             reward -= 0.2
 
-        # ❗ Premium user penalty
-        if item["customer_type"] == "premium" and action.get("priority") != "high":
-            reward -= 0.5
+        # 🔥 NEW: Emotion-aware penalty
+        if item["emotion"] == "angry":
+            if not any(word in response for word in ["sorry", "apologize"]):
+                reward -= 0.3
+
+        # ❗ Premium user handling
+        if item["customer_type"] == "premium":
+            if action.get("priority") != "high":
+                reward -= 0.5
 
         # Move step
         self.current_step += 1
