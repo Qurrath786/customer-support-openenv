@@ -4,6 +4,9 @@ WORKDIR /app
 
 COPY . .
 
-RUN pip install --no-cache-dir fastapi uvicorn openenv-core
+RUN pip install --upgrade pip
+RUN pip install openenv-core fastapi uvicorn
 
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]
+EXPOSE 7860
+
+CMD ["uvicorn", "server.app:main", "--host", "0.0.0.0", "--port", "7860"]
