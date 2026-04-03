@@ -11,7 +11,6 @@ dependencies = [
 ]
 
 [project.scripts]
-server = "app:app"
-
+server = "server.app:app"
 [tool.openenv]
 entry_point = "env.environment:CustomerSupportEnv"

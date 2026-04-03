@@ -9,4 +9,4 @@ RUN pip install openenv-core fastapi uvicorn
 
 EXPOSE 7860
 
-CMD ["uvicorn", "server.app:main", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["uvicorn", "server.app:app", "--host", "0.0.0.0", "--port", "7860"]
