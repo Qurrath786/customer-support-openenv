@@ -25,5 +25,9 @@ def main():
     return app
 
 
-# 🔥 THIS LINE IS CRITICAL
+# for uvicorn
 app = main()
+
+# 🔥 THIS FIXES YOUR FINAL ERROR
+if __name__ == "__main__":
+    main()
