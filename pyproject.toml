@@ -1,8 +1,17 @@
 [project]
 name = "customer-support-env"
 version = "0.1.0"
-description = "AI Customer Support Environment using OpenEnv"
-authors = ["Qurrath Ul Aain"]
+description = "AI customer support environment"
+requires-python = ">=3.10"
+
+dependencies = [
+    "openenv-core>=0.2.0",
+    "fastapi",
+    "uvicorn"
+]
+
+[project.scripts]
+server = "app:app"
 
 [tool.openenv]
 entry_point = "env.environment:CustomerSupportEnv"
