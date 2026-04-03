@@ -7,7 +7,7 @@ sdk: docker
 app_file: inference.py
 pinned: false
 license: mit
-short_description: AI Customer Support Environment with Emotion and Priority Awareness
+short_description: AI Customer Support Environment 
 ---
 
 # Customer Support Environment
