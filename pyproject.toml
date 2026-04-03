@@ -1,0 +1,8 @@
+[project]
+name = "customer-support-env"
+version = "0.1.0"
+description = "AI Customer Support Environment using OpenEnv"
+authors = ["Qurrath Ul Aain"]
+
+[tool.openenv]
+entry_point = "env.environment:CustomerSupportEnv"
