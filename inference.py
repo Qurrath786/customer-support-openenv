@@ -8,33 +8,53 @@ def smart_agent(obs):
     # 🔧 Normalize text
     message = message.replace("didn't", "did not")
 
-    # 🎯 INTENT DETECTION (STRONG)
+    # 🎯 INTENT DETECTION (FINAL)
     if any(word in message for word in ["not receive", "did not receive", "missing", "late"]):
         intent = "refund"
 
     elif any(word in message for word in ["wrong", "incorrect", "damaged"]):
         intent = "refund"
 
-    elif any(word in message for word in ["complaint", "second", "again"]):
+    elif any(word in message for word in ["payment", "deducted", "failed"]):
+        intent = "escalate"
+
+    elif any(word in message for word in ["status", "update"]):
+        intent = "inform"
+
+    elif any(word in message for word in ["complaint", "complained", "second", "again"]):
         intent = "escalate"
 
     else:
         intent = "refund"
 
-    # ⚡ PRIORITY DETECTION
-    if any(word in message for word in ["frustrating", "angry", "issue", "problem"]):
+    # ⚡ PRIORITY DETECTION (FINAL)
+    if any(word in message for word in ["frustrating", "angry"]):
         priority = "high"
+
+    elif any(word in message for word in ["payment", "deducted", "failed"]):
+        priority = "high"
+
     elif customer_type == "premium":
         priority = "high"
+
+    elif any(word in message for word in ["status", "update"]):
+        priority = "low"
+
     else:
         priority = "medium"
 
-    # 💬 RESPONSE GENERATION
+    # 💬 RESPONSE GENERATION (FINAL)
     if any(word in message for word in ["wrong", "damaged"]):
         response = "We sincerely apologize for the issue with your order. We will arrange a replacement or refund immediately."
 
     elif any(word in message for word in ["not receive", "did not receive", "late", "missing"]):
         response = "We apologize for the inconvenience. We will check your order status and resolve this as soon as possible."
+
+    elif any(word in message for word in ["payment", "deducted", "failed"]):
+        response = "We sincerely apologize for the payment issue. We will escalate this immediately and resolve it as soon as possible."
+
+    elif any(word in message for word in ["status", "update"]):
+        response = "Sure, we will provide you with the latest update on your order status shortly."
 
     elif customer_type == "premium":
         response = "We sincerely apologize. As a valued premium customer, your issue will be prioritized and resolved immediately."
