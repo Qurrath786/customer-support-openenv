@@ -1,14 +1,56 @@
+import os
+import json
+from openai import OpenAI
 from env.environment import CustomerSupportEnv
 
 
+# 🔥 Initialize LLM client (MANDATORY for hackathon)
+client = OpenAI(
+    base_url=os.environ["API_BASE_URL"],
+    api_key=os.environ["API_KEY"]
+)
+
+
+# 🧠 LLM DECISION FUNCTION
+def llm_decision(message, customer_type):
+    prompt = f"""
+You are a customer support AI.
+
+Message: {message}
+Customer Type: {customer_type}
+
+Decide:
+- intent (refund / escalate / inform)
+- priority (low / medium / high)
+- short response
+
+Return ONLY JSON:
+{{"intent": "...", "priority": "...", "response": "..."}}
+"""
+
+    try:
+        response = client.chat.completions.create(
+            model=os.environ["MODEL_NAME"],
+            messages=[{"role": "user", "content": prompt}]
+        )
+
+        text = response.choices[0].message.content
+
+        return json.loads(text)
+
+    except Exception as e:
+        # fallback if LLM fails
+        return smart_agent({"message": message, "customer_type": customer_type})
+
+
+# 🧠 RULE-BASED BACKUP (your original logic)
 def smart_agent(obs):
     message = obs["message"].lower()
     customer_type = obs["customer_type"]
 
-    # 🔧 Normalize text
     message = message.replace("didn't", "did not")
 
-    # 🎯 INTENT DETECTION (FINAL)
+    # INTENT
     if any(word in message for word in ["not receive", "did not receive", "missing", "late"]):
         intent = "refund"
 
@@ -27,7 +69,7 @@ def smart_agent(obs):
     else:
         intent = "refund"
 
-    # ⚡ PRIORITY DETECTION (FINAL)
+    # PRIORITY
     if any(word in message for word in ["frustrating", "angry"]):
         priority = "high"
 
@@ -43,7 +85,7 @@ def smart_agent(obs):
     else:
         priority = "medium"
 
-    # 💬 RESPONSE GENERATION (FINAL)
+    # RESPONSE
     if any(word in message for word in ["wrong", "damaged"]):
         response = "We sincerely apologize for the issue with your order. We will arrange a replacement or refund immediately."
 
@@ -69,6 +111,7 @@ def smart_agent(obs):
     }
 
 
+# 🚀 MAIN RUN LOOP
 def run():
     env = CustomerSupportEnv()
     obs = env.reset()
@@ -80,7 +123,8 @@ def run():
     print("[START] Running smart agent")
 
     while not done:
-        action = smart_agent(obs)
+        # 🔥 USE LLM (REQUIRED)
+        action = llm_decision(obs["message"], obs["customer_type"])
 
         obs, reward, done, _ = env.step(action)
 
