@@ -1,9 +1,14 @@
 def grader(output):
-    score = 0
+    if not isinstance(output, dict):
+        return 0.5
 
-    if output["intent"] == "refund":
-        score += 0.4
-    if output["priority"] == "high":
-        score += 0.4
+    score = 0.0
 
-    return max(0.1, min(score, 0.9))  # ✅ force range
+    if output.get("intent") == "escalate":
+        score += 0.4
+    if output.get("priority") == "high":
+        score += 0.3
+    if "sorry" in output.get("response", "").lower():
+        score += 0.2
+
+    return max(0.2, min(score, 0.8))
