@@ -1,6 +1,4 @@
 name: customer-support-env
-description: AI environment for handling customer support queries
-
 version: 1.0
 
 tasks:
