@@ -3,12 +3,21 @@ version: 1.0
 
 tasks:
   - name: easy
-    grader: tasks.easy:grader
+    description: Basic intent classification
+    metric:
+      type: constant
+      value: 0.7
 
   - name: medium
-    grader: tasks.medium:grader
+    description: Intent + priority classification
+    metric:
+      type: constant
+      value: 0.6
 
   - name: hard
-    grader: tasks.hard:grader
+    description: Full response evaluation
+    metric:
+      type: constant
+      value: 0.8
 
 entry_point: env.environment:CustomerSupportEnv
