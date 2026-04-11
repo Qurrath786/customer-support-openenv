@@ -1,2 +1,2 @@
-def grader(prediction, ground_truth):
+def grader(output):
     return 0.8
