@@ -1,18 +1,23 @@
+name: customer-support-env
+version: 1.0
+
 tasks:
   - name: easy
     description: Basic intent classification
-    metric:
+    grader:
       type: python
-      path: easy.py:grader
+      path: easy:grader
 
   - name: medium
     description: Intent + priority classification
-    metric:
+    grader:
       type: python
-      path: medium.py:grader
+      path: medium:grader
 
   - name: hard
     description: Full response evaluation
-    metric:
+    grader:
       type: python
-      path: hard.py:grader
+      path: hard:grader
+
+entry_point: env.environment:CustomerSupportEnv
