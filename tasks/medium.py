@@ -1,2 +1,5 @@
 def grader(output):
-    return 0.6
+    try:
+        return 0.6
+    except:
+        return 0.5

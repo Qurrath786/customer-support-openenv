@@ -3,16 +3,16 @@ tasks:
     description: Basic intent classification
     metric:
       type: python
-      path: tasks.easy:grader
+      path: easy.py:grader
 
   - name: medium
     description: Intent + priority classification
     metric:
       type: python
-      path: tasks.medium:grader
+      path: medium.py:grader
 
   - name: hard
     description: Full response evaluation
     metric:
       type: python
-      path: tasks.hard:grader
+      path: hard.py:grader
