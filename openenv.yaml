@@ -4,20 +4,20 @@ version: 1.0
 tasks:
   - name: easy
     description: Basic intent classification
-    grader:
+    metric:
       type: python
-      path: easy:grader
+      path: tasks.easy:grader
 
   - name: medium
     description: Intent + priority classification
-    grader:
+    metric:
       type: python
-      path: medium:grader
+      path: tasks.medium:grader
 
   - name: hard
     description: Full response evaluation
-    grader:
+    metric:
       type: python
-      path: hard:grader
+      path: tasks.hard:grader
 
 entry_point: env.environment:CustomerSupportEnv
