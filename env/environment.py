@@ -104,19 +104,25 @@ class CustomerSupportEnv:
                 raw_reward -= 0.5
 
         # 🔥 NORMALIZE SCORE → STRICT (0,1)
-        # Convert raw_reward to safe range
-        normalized = (raw_reward + 3) / 6   # map approx [-3,3] → [0,1]
+        normalized = (raw_reward + 3) / 6
 
-        # 🔥 CLAMP STRICTLY
+        # 🔥 CLAMP STRICTLY (IMPORTANT)
         normalized = max(0.1, min(normalized, 0.9))
 
         # Move step
         self.current_step += 1
         done = self.current_step >= len(self.data)
 
-        next_obs = None if done else self._get_observation()
+        # 🚨 CRITICAL FIX (NO None OUTPUT)
+        if done:
+            next_obs = {
+                "message": "completed",
+                "customer_type": "none"
+            }
+        else:
+            next_obs = self._get_observation()
 
-        return next_obs, round(normalized, 2), done, {}
+        return next_obs, float(round(normalized, 2)), done, {}
 
     # 📊 State info
     def state(self):
