@@ -1,21 +1,23 @@
+name: customer-support-env
+version: 1.0
+
 tasks:
   - name: easy
     description: Basic intent classification
-    task_type: single_turn
-    metric:
+    evaluation:
       type: python
       path: tasks.easy:grader
 
   - name: medium
     description: Intent + priority classification
-    task_type: single_turn
-    metric:
+    evaluation:
       type: python
       path: tasks.medium:grader
 
   - name: hard
     description: Full response evaluation
-    task_type: single_turn
-    metric:
+    evaluation:
       type: python
       path: tasks.hard:grader
+
+entry_point: env.environment:CustomerSupportEnv
