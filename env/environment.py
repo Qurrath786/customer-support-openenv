@@ -68,37 +68,47 @@ class CustomerSupportEnv:
     def step(self, action: Dict):
         item = self.data[self.current_step]
 
-        reward = 0.0
+        raw_reward = 0.0
 
         # ✅ Intent check
         if action.get("intent") == item["correct_intent"]:
-            reward += 0.5
+            raw_reward += 1.0
         else:
-            reward -= 1.0
+            raw_reward -= 1.0
 
         # ✅ Priority check
         if action.get("priority") == item["priority"]:
-            reward += 0.3
+            raw_reward += 0.5
         else:
-            reward -= 0.2
+            raw_reward -= 0.5
 
-        # ✅ Response tone check
+        # ✅ Response tone
         response = action.get("response", "").lower()
-
         if any(word in response for word in ["sorry", "apologize", "understand"]):
-            reward += 0.2
+            raw_reward += 0.5
         else:
-            reward -= 0.2
+            raw_reward -= 0.5
 
-        # 🔥 NEW: Emotion-aware penalty
+        # 🔥 Emotion-aware
         if item["emotion"] == "angry":
-            if not any(word in response for word in ["sorry", "apologize"]):
-                reward -= 0.3
+            if any(word in response for word in ["sorry", "apologize"]):
+                raw_reward += 0.5
+            else:
+                raw_reward -= 0.5
 
-        # ❗ Premium user handling
+        # ❗ Premium handling
         if item["customer_type"] == "premium":
-            if action.get("priority") != "high":
-                reward -= 0.5
+            if action.get("priority") == "high":
+                raw_reward += 0.5
+            else:
+                raw_reward -= 0.5
+
+        # 🔥 NORMALIZE SCORE → STRICT (0,1)
+        # Convert raw_reward to safe range
+        normalized = (raw_reward + 3) / 6   # map approx [-3,3] → [0,1]
+
+        # 🔥 CLAMP STRICTLY
+        normalized = max(0.1, min(normalized, 0.9))
 
         # Move step
         self.current_step += 1
@@ -106,7 +116,7 @@ class CustomerSupportEnv:
 
         next_obs = None if done else self._get_observation()
 
-        return next_obs, round(reward, 2), done, {}
+        return next_obs, round(normalized, 2), done, {}
 
     # 📊 State info
     def state(self):
