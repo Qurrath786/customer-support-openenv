@@ -3,12 +3,12 @@ version: 1.0
 
 tasks:
   - name: easy
-    grader: tasks.easy:grader
+    entry_point: tasks.easy:evaluate
 
   - name: medium
-    grader: tasks.medium:grader
+    entry_point: tasks.medium:evaluate
 
   - name: hard
-    grader: tasks.hard:grader
+    entry_point: tasks.hard:evaluate
 
 entry_point: env.environment:CustomerSupportEnv

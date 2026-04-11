@@ -1,2 +1,2 @@
-def grader(output):
+def evaluate(output):
     return 0.8
