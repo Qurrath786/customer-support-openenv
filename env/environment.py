@@ -64,7 +64,7 @@ class CustomerSupportEnv:
             "customer_type": item["customer_type"]
         }
 
-    # ⚡ Step function
+    # ⚡ Step function (GRADER LOGIC)
     def step(self, action: Dict):
         item = self.data[self.current_step]
 
@@ -72,48 +72,54 @@ class CustomerSupportEnv:
 
         # ✅ Intent check
         if action.get("intent") == item["correct_intent"]:
-            raw_reward += 1.0
+            raw_reward += 0.9
         else:
-            raw_reward -= 1.0
+            raw_reward -= 0.8
 
         # ✅ Priority check
         if action.get("priority") == item["priority"]:
             raw_reward += 0.5
         else:
-            raw_reward -= 0.5
+            raw_reward -= 0.4
 
         # ✅ Response tone
         response = action.get("response", "").lower()
         if any(word in response for word in ["sorry", "apologize", "understand"]):
             raw_reward += 0.5
         else:
-            raw_reward -= 0.5
+            raw_reward -= 0.4
 
-        # 🔥 Emotion-aware
+        # 🔥 Emotion-aware handling
         if item["emotion"] == "angry":
             if any(word in response for word in ["sorry", "apologize"]):
                 raw_reward += 0.5
             else:
-                raw_reward -= 0.5
+                raw_reward -= 0.4
 
-        # ❗ Premium handling
+        # ❗ Premium customer handling
         if item["customer_type"] == "premium":
             if action.get("priority") == "high":
                 raw_reward += 0.5
             else:
-                raw_reward -= 0.5
+                raw_reward -= 0.4
 
-        # 🔥 NORMALIZE SCORE → STRICT (0,1)
+        # 🔥 NORMALIZATION (SAFE)
         normalized = (raw_reward + 3) / 6
 
-        # 🔥 CLAMP STRICTLY (IMPORTANT)
-        normalized = max(0.1, min(normalized, 0.9))
+        # 🚨 STRICT CLAMP (NO EDGE VALUES)
+        if normalized >= 0.95:
+            normalized = 0.94
+        elif normalized <= 0.05:
+            normalized = 0.06
 
-        # Move step
+        # Ensure float
+        normalized = float(normalized)
+
+        # Move to next step
         self.current_step += 1
         done = self.current_step >= len(self.data)
 
-        # 🚨 CRITICAL FIX (NO None OUTPUT)
+        # 🚨 Avoid None observation
         if done:
             next_obs = {
                 "message": "completed",
@@ -122,7 +128,7 @@ class CustomerSupportEnv:
         else:
             next_obs = self._get_observation()
 
-        return next_obs, float(round(normalized, 2)), done, {}
+        return next_obs, normalized, done, {}
 
     # 📊 State info
     def state(self):
